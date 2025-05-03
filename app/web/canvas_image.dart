@@ -1,19 +1,36 @@
-import 'package:web/web.dart' as web;
+import 'package:web/helpers.dart';
 import 'dart:js_interop';
 import 'color_extractor.dart';
+import 'package:web/web.dart' as web;
 
 void setupEventListeners(ColorExtractor extractor) {
   //El
-    //Canvas
-    final canvas = web.document.getElementById('--canvas-img') as web.HTMLCanvasElement?;
-    final ctx = canvas?.getContext('2d') as web.CanvasRenderingContext2D?;
-    final paletteContainer = web.document.getElementById('-container-palette');
+    //Main Container
+    final mainContainer = web.document.querySelector('.main') as web.HTMLDivElement;
+
+    //Img Container
+    final imgContainer = web.document.getElementById('-container-img') as web.HTMLDivElement;
+
+    //Loaded Image
+      //Canvas
+        final canvas = web.document.createElement('canvas') as web.HTMLCanvasElement;
+        canvas.id = '---canvas-img';
+
+        final ctx = canvas.getContext('2d') as web.CanvasRenderingContext2D;
+        final img = web.document.createElement('img') as web.HTMLImageElement;
+      //
+      
+      final loadedContainer = web.document.getElementById('-container-loaded-img') as web.HTMLDivElement;
+      final containerCanvas = web.document.getElementById('--container-canvas') as web.HTMLDivElement;
+      final paletteContainer = web.document.getElementById('--container-palette') as web.HTMLDivElement;
+    //
 
     //Inputs
-    final loadBtn = web.document.getElementById('--btn-load-img') as web.HTMLButtonElement?;
     final fileInput = web.document.getElementById('--input-file-img') as web.HTMLInputElement?;
 
-    if(loadBtn == null || fileInput == null || canvas == null || paletteContainer == null) return;
+    //Url
+    final urlForm = web.document.getElementById('-url-form') as web.HTMLFormElement;
+    final urlInput = web.document.getElementById('---input-url-img') as web.HTMLInputElement;
   //
 
   //Display Colors
@@ -42,32 +59,119 @@ void setupEventListeners(ColorExtractor extractor) {
     }
   }
 
-  //Load Btn
-  loadBtn.onClick.listen((_) async {
-    final file = fileInput.files?.item(0);
-    if(file == null) return;
+  //Process Image
+    void processImage(web.HTMLImageElement img) {
+      //...
+        containerCanvas.querySelector('#---canvas-img')?.remove();
+      //
 
-    //Reader
-    final reader = web.FileReader();
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
 
-    reader.onLoadEnd.listen((web.ProgressEvent _) {
-      final image = web.document.createElement('img') as web.HTMLImageElement;
-      image.src = (reader.result as JSAny).toString();
+      containerCanvas.append(canvas);
 
-      image.onLoad.listen((web.Event _) {
-        if(ctx == null) return;
-        canvas.width = image.width;
-        canvas.height = image.height;
-        ctx.drawImage(image, 0, 0);
+      //Data
+      final data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      final colors = extractor.extractColors(data);
+      displayColors(colors, paletteContainer);
+    }
 
-        //Data
-        final imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        final colors = extractor.extractColors(imageData);
+    //Loade Screen
+    final loadScreen = web.document.createElement('div') as web.HTMLDivElement;
+    loadScreen.className = 'load-screen';
+    bool loaderActive = false;
 
-        displayColors(colors, paletteContainer);
-      });
+    //Loader
+      void showLoader() {
+        if(loaderActive) return;
+        loaderActive = true;
+
+        mainContainer.appendChild(loadScreen);
+
+        final loadTxt = web.document.createElement('p') as web.HTMLParagraphElement;
+        String loadContent = 'Loading Image';
+        loadTxt.id = 'load-txt';
+        loadTxt.textContent = loadContent;
+        loadScreen.appendChild(loadTxt);
+
+        //Container
+        imgContainer.style.display = 'none';
+
+        //Animation
+          int ellipsisCount = 0;
+          const maxDots = 3;
+
+          final timer = web.window.setInterval((JSAny _) {
+            ellipsisCount = (ellipsisCount + 1) % (maxDots + 1);
+            final dots = '.' * ellipsisCount;
+            loadTxt.textContent = '$loadContent$dots';
+            return null;
+          }.toJS, 500.toJS);
+        //
+
+        loadScreen.setAttribute('data-timer-id', timer.toString());
+      }
+    //
+
+    //Display Container
+      void displayContainer() {
+        if(loaderActive) {
+          final timerId = loadScreen.getAttribute('data-timer-id');
+          if(timerId != null) web.window.clearInterval(int.parse(timerId));
+        }
+
+        loadScreen.style.display = 'none';
+        imgContainer.style.display = 'none';
+        loadedContainer.style.display = 'block';
+      }
+    //
+  //
+
+  //Input    
+    fileInput?.onChange.listen((e) {
+      final file = fileInput.files?.item(0);
+      if(file == null) return;
+
+      showLoader();
+
+      //Load
+        final reader = web.FileReader();
+
+        reader.onLoadEnd.listen((e) {
+          img.src = (reader.result as JSAny).toString();
+          img.onLoad.listen((e) {
+            Future.microtask(() {
+              processImage(img);
+              displayContainer();
+            });
+          });
+        });
+
+        reader.readAsDataURL(file);
+      //
     });
+  //
 
-    reader.readAsDataURL(file);
+  //Url
+  urlForm.onSubmit.listen((e) {
+    e.preventDefault();
+
+    showLoader();
+
+    final url = urlInput.value.trim();
+    if(url.isEmpty) return;
+
+    //Img
+      img.crossOrigin = 'Anonymous';
+      img.onLoad.listen((e) {
+        Future.microtask(() {
+          processImage(img);
+          displayContainer();
+        });
+      });
+      img.onError.listen((e) => print('Error img'));
+      img.src = url;
+    //
   });
 }

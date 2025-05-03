@@ -5,23 +5,58 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="scaffolded-by" content="https://github.com/dart-lang/sdk">
-    <title>app</title>
+    <title>Color Extractor</title>
     <link rel="stylesheet" href="./styles/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 <body>
     <div class="main">
-        <div id="-container-canvas">
-            <canvas id="--canvas-img"></canvas>    
+        <div id="-m-txt">
+            <div id="--m-p-container" title="Color Extractor Home">
+                <p id="---m-p">Color Extractor</p>
+            </div>
         </div>
-
-        <div id="-container-i">
-            <form action="#">
-                <input type="file" id="--input-file-img" />
-                <input type="button" id="--btn-load-img" value="Load Image">
-            </form>
+        
+        <div id="-container-fi">
+            <section id="-for-img">         
+                <div id="-container-img">
+                    <!-- Inputs -->
+                    <div id="-container-i" class="flex items-center justify-center w-full" title="Upload a Image">
+                        <form action="#" class="w-full">
+                            <label for="--input-file-img" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                                <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                    <p id="---i-txt" class="mb-2 text-sm text-gray-500">
+                                        <span class="font-semibold">Click here to upload a image</span>
+                                    </p>
+                                    <p id="---s-i-txt" class="text-xs text-gray-500">to extract the color</p>
+                                </div>
+                                <input type="file" id="--input-file-img" class="hidden" accept="image/png, image/jpeg, image/gif" />
+                            </label>
+                        </form>
+                    </div>
+    
+                    <!-- Url -->
+                    <div id="-container-url">
+                        <form id="-url-form">
+                            <div id="--l-act">
+                                <input type="url" id="---input-url-img" placeholder="Enter a URL image..." />
+                                <button type="submit" id="---btn-load-img" title="Load a URL Image">Load image</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+    
+                <!-- Loaded Image -->
+                    <div id="-container-loaded-img">
+                        <!-- Canvas -->
+                        <div id="--container-canvas"></div>
+                
+                        <!-- Palette -->
+                        <div id="--container-palette"></div>
+                    </div>
+                <!---->
+            </section>
         </div>
-
-        <div id="-container-palette"></div>
     </div>
 
     <!-- Script -->
