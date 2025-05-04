@@ -1,9 +1,10 @@
 import 'package:web/helpers.dart';
 import 'dart:js_interop';
-import 'color_extractor.dart';
-import 'session_manager.dart';
 import 'dart:math' as math;
 import 'package:web/web.dart' as web;
+import 'color_extractor.dart';
+import 'session_manager.dart';
+import 'copy_clipboard.dart';
 
 void setupEventListeners(ColorExtractor extractor) {
   //El
@@ -44,6 +45,9 @@ void setupEventListeners(ColorExtractor extractor) {
       initialSession: AppSession.main
     );
   //
+
+  //Copy
+  ClipboardManager.setupCopy();
 
   //Display Colors
   void displayColors(List<Map<String, dynamic>> colors, web.Element paletteContent) {
@@ -87,6 +91,8 @@ void setupEventListeners(ColorExtractor extractor) {
       colorItemContainer.appendChild(colorInfoContainer);
       paletteContent.appendChild(colorItemContainer);
     }
+
+    ClipboardManager.setupCopyButtons(paletteContent);
   }
 
   //Process Image

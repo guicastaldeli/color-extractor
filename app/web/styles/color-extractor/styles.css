@@ -128,4 +128,36 @@
   position: relative;
   top: 0.1rem;
   font-size: 0.7rem;
-}/*# sourceMappingURL=styles.css.map */
+}
+
+/* Copy Btn */
+.show-copy-btn {
+  display: block !important;
+}
+
+.hide-copy-btn {
+  display: none !important;
+}
+
+.wrapper {
+  position: relative;
+  display: inline-block;
+}
+.wrapper #-container-copy-btn {
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+.wrapper #-container-copy-btn #--copy-button {
+  margin-left: auto;
+  box-sizing: border-box;
+  width: 40%;
+  font-size: 0.7rem;
+  color: rgb(255, 255, 255);
+  background: linear-gradient(to right, rgba(0, 0, 0, 0), rgb(0, 0, 0));
+}
+.wrapper #-container-copy-btn #--copy-button:hover {
+  cursor: pointer;
+}
+
+/* *//*# sourceMappingURL=styles.css.map */
