@@ -1,224 +1,172 @@
 .main {
-    width: 100%;
-    height: 100%;
-
-    box-sizing: border-box;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-
-    .main, #-container-img, #-container-i, #-container-palette {
-        border: 0;
-        margin: 0;
-        padding: 0;
-    }
-
-    /* main text */
-        #-m-txt {
-            position: fixed;
-            top: 0;
-
-            margin: 0;
-            border: 0;
-
-            width: 100%;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            border-bottom: none;
-
-            /* after */
-            &::after {
-                content: '';
-                position: absolute;
-                bottom: 0;
-                left: 50%;
-                transform: translateX(-50%);
-                width: 85%;
-                height: 0.05rem;
-                background-color: rgb(229, 231, 235);
-            }
-
-            #--m-p-container {
-                cursor: pointer;
-                
-                #---m-p {
-                    width: fit-content;
-    
-                    margin: 1rem;
-    
-                    font-weight: bolder;
-                    font-size: 2rem;
-                }
-            }
-
-        }
-    /* */
-    
-    /* img */
-        #-container-fi {
-            width: 100%;
-            overflow: auto;
-
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        #-for-img {
-            width: 18%;
-        }
-
-        #-container-img {
-            display: flex;
-            flex-direction: column;
-            gap: 2rem !important;
-
-            /* inputs */
-                #-container-i {
-                    
-                }
-            /* */
+    #-for-loaded-img {
+        position: relative;
         
-            /* url */
-                #-container-url {
-                    height: 4.6rem;
-                    border-top: 0.1rem solid rgb(229, 231, 235);
-                    padding-top: 1.8rem;
+        justify-content: center;
+        align-items: center;
 
-                    #-url-form {
-                        width: 100%;
-                        height: 100%;
-                    }
-
-                    #--l-act {
-                        display: flex;
-                        flex-direction: row;
-
-                        width: 100%;
-                        height: 100%;
-                    }
-
-                    #---input-url-img {
-                        width: 60%;
-
-                        padding-left: 0.6rem;
-
-                        border: 0.1rem solid rgb(209, 213, 220);
-                        border-radius: 0.5rem;
-
-                        font-size: 0.8rem;
-
-                        /* focus */
-                        &:focus {
-                            border: 0.1rem solid rgb(37, 99, 235);
-                            outline: none;
-                        }
-
-                        /* placeholder */
-                        &::placeholder {                            
-                            font-size: 0.8rem;
-                        }
-                    }
-
-                    #---btn-load-img {
-                        width: 38%;
-                        margin-left: auto;
-
-                        background-color: rgb(37, 99, 235);
-                        color: rgb(255, 255, 255);
-
-                        border: 0.1rem solid rgb(31, 83, 195);
-                        border-radius: 0.5rem;
-
-                        /* hover */
-                        &:hover {
-                            cursor: pointer;
-
-                            background-color: rgb(31, 85, 200);
-                            border-color: rgb(29, 76, 177);
-                            
-                            transition: background-color 0.13s ease;
-                        }
-                    }
-                }
-            /* */
-        }
-    /* */
-
-    /* palette */
-        #-container-palette {
-        }
-    /* */
-
-    /* loaded img */
         #-container-loaded-img {
-            display: none;
-            position: relative;
-            justify-content: center;
-            align-items: center;
+            background-color: transparent;
 
-            background-color: rgb(144, 37, 37);
-            
             #--content {
                 display: flex;
                 grid-template-columns: repeat(3, 1fr);
                 gap: 5rem;
-                
-                #---container-palette {
-                    #_content-palette {
-                        display: grid;
-                        grid-template-columns: repeat(4, 1fr);
-                        gap: 1rem;
+
+                border: 0.1rem solid rgb(229, 231, 235);
+                border-radius: 0.5rem;
+
+                /* back */
+                    #---container-back {
+                        position: relative;
+                        width: 7.5rem;
+                        margin: 3rem 3rem 3rem 2rem;
+
+                        border-right: none;
+
+                        /* after */
+                        &::after {
+                            content: '';
+                            position: absolute;
+                            right: 0;
+                            top: 0;
+
+                            width: 0.05rem;
+                            height: 100%;
+
+                            background-color: rgb(229, 231, 235);
+                        }
+
+                        /* button */
+                            #_content-back {
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+
+                                width: 5.5rem;
+                                height: 3rem;
+                                
+                                #---back-btn {
+                                    width: 100%;
+                                    height: 100%;
+    
+                                    background-color: rgb(37, 99, 235);
+                                    color: rgb(255, 255, 255);
+    
+                                    border: 0.1rem solid rgb(31, 83, 195);
+                                    border-radius: 0.5rem;
+    
+                                    /* hover */
+                                    &:hover {
+                                        cursor: pointer;
+
+                                        background-color: rgb(31, 85, 200);
+                                        border-color: rgb(29, 76, 177);
+                                        
+                                        transition: background-color 0.13s ease;
+                                    }
+                                }
+                            }
+                        /* */
                     }
-                }
-            }
-        }
-    /* */
+                /* */
 
-    /* load screen */
-        .load-screen {
-            position: fixed;
+                /* canvas */
+                    #---container-canvas {
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        
+                        #_content-canvas {
+                            background-color: rgb(246, 248, 250);
+    
+                            border: 0.1rem solid rgb(209, 213, 220);
+                            border-radius: 0.5rem;
+    
+                            #__canvas-img {
+                                transform: scale(0.9);
+                            }
+                        }
+                    }
+                /* */
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
+                /* palette */
+                    #---container-palette {
+                        transform: scale(0.9);
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
 
-            background-color: rgb(246, 248, 250);
+                        padding-left: 2.5rem;
+
+                        border-left: 0;
+
+                        /* after */
+                        &::before {
+                            content: '';
+                            position: absolute;
+                            left: 0;
+                            top: 0;
+
+                            width: 0.05rem;
+                            height: 100%;
+
+                            background-color: rgb(229, 231, 235);
+                        }
+
+                        #_content-palette {
+                            display: grid;
+                            grid-template-columns: repeat(4, 1fr);
+                            gap: 1rem;
+
+                            /* color display */
+                                #_content-color-display {
+                                    display: flex;
+                                    flex-direction: column;
+                                    align-items: center;
+
+                                    width: 10rem;
+
+                                    background-color: rgb(212, 212, 212);
+    
+                                    border: 0.1rem solid rgb(180, 185, 192);
+                                    border-radius: 2%;
+
+                                    /* color */
+                                        #__color-div {
+                                            display: inline-block;
+                                            
+                                            width: 8.5rem;
+                                            height: 8.5rem;
+                                            margin: 0.5rem;
+                                        }
+                                    /* */
+
+                                    /* color type */
+                                        #__content-color-type {
+                                            display: flex;
+                                            flex-direction: column;
+                                            justify-content: center;
+                                            text-align: center;
+
+                                            width: 100%;
+
+                                            background-color: rgb(246, 248, 250);
+
+                                            p {
+                                                position: relative;
+                                                top: 0.1rem;
+                                                font-size: 0.7rem;
+                                            }
+                                        }
+                                    /* */
+                                }
+                            /* */
             
-            border: 0.1rem solid rgb(229, 231, 235);
-            border-radius: 2%;
-
-            width: 30%;
-            height: 50%;
-            z-index: 8;
-
-            #load-txt {
-                position: relative;
-                z-index: 9;
-
-                font-size: 1.3rem;
-
-                color: rgb(37, 149, 235);
-
-                /* Animation */
-                @keyframes ellipsis {
-                    to { width: 3rem; }
-                }
-
-                &::after {
-                    content: '...';
-                    display: inline-block;
-                    width: 0;
-                    overflow: hidden;
-                    vertical-align: bottom;
-                    animation:  ellipsis 1.5s infinite steps(4);
-                }
+                        }
+                    }
+                /* */
             }
         }
-    /* */
+    }
 }

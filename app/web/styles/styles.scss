@@ -17,7 +17,6 @@
     }
 /* */
 
-
 html, body {
     width: 100%;
     height: 100%;
@@ -26,4 +25,159 @@ html, body {
     
     margin: 0;
     padding: 0;
+}
+
+/* session */
+    .session-active {
+        display: flex;
+    }
+
+    .session-inactive {
+        display: none;
+    }
+/* */
+
+.main {
+    width: 100%;
+    height: 100%;
+
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .main, #-container-img, #-container-i, #-container-palette {
+        border: 0;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* main text */
+        #-m-txt {
+            position: fixed;
+            top: 0;
+
+            margin: 0;
+            border: 0;
+
+            width: 100%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-bottom: none;
+
+            /* after */
+            &::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 85%;
+                height: 0.05rem;
+                background-color: rgb(229, 231, 235);
+            }
+
+            #--m-p-container {
+                cursor: pointer;
+                
+                #---m-p {
+                    width: fit-content;
+    
+                    margin: 1rem;
+    
+                    font-weight: bolder;
+                    font-size: 2rem;
+                }
+            }
+
+        }
+    /* */
+    
+    /* img */
+        #-container-fi {
+            width: 100%;
+            overflow: auto;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        
+        #-container-img {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem !important;
+        
+            /* url */
+                #-container-url {
+                    height: 4.6rem;
+                    border-top: 0.1rem solid rgb(229, 231, 235);
+                    padding-top: 1.8rem;
+
+                    #-url-form {
+                        width: 100%;
+                        height: 100%;
+                    }
+
+                    #--l-act {
+                        display: flex;
+                        flex-direction: row;
+
+                        width: 100%;
+                        height: 100%;
+                    }
+
+                    #---input-url-img {
+                        width: 60%;
+
+                        padding-left: 0.6rem;
+                        padding-right: 0.6rem;
+
+                        border: 0.1rem solid rgb(209, 213, 220);
+                        border-radius: 0.5rem;
+
+                        font-size: 0.8rem;
+
+                        /* focus */
+                        &:focus {
+                            border: 0.1rem solid rgb(37, 99, 235);
+                            outline: none;
+                        }
+
+                        /* placeholder */
+                        &::placeholder {                            
+                            font-size: 0.8rem;
+                        }
+                    }
+
+                    #---btn-load-img {
+                        width: 38%;
+                        margin-left: auto;
+
+                        background-color: rgb(37, 99, 235);
+                        color: rgb(255, 255, 255);
+
+                        border: 0.1rem solid rgb(31, 83, 195);
+                        border-radius: 0.5rem;
+
+                        /* hover */
+                        &:hover {
+                            cursor: pointer;
+
+                            background-color: rgb(31, 85, 200);
+                            border-color: rgb(29, 76, 177);
+                            
+                            transition: background-color 0.13s ease;
+                        }
+                    }
+                }
+            /* */
+        }
+    /* */
 }

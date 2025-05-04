@@ -1,0 +1,43 @@
+.main {
+    /* load screen */
+        .load-screen {
+            position: fixed;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background-color: rgb(246, 248, 250);
+            
+            border: 0.1rem solid rgb(229, 231, 235);
+            border-radius: 2%;
+
+            width: 30%;
+            height: 50%;
+            z-index: 8;
+
+            #load-txt {
+                position: relative;
+                z-index: 9;
+
+                font-size: 1.3rem;
+
+                color: rgb(37, 149, 235);
+
+                /* Animation */
+                @keyframes ellipsis {
+                    to { width: 3rem; }
+                }
+
+                &::after {
+                    content: '...';
+                    display: inline-block;
+                    width: 0;
+                    overflow: hidden;
+                    vertical-align: bottom;
+                    animation:  ellipsis 1.5s infinite steps(4);
+                }
+            }
+        }
+    /* */
+}

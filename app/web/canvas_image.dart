@@ -1,6 +1,8 @@
 import 'package:web/helpers.dart';
 import 'dart:js_interop';
 import 'color_extractor.dart';
+import 'session-maganer.dart';
+import 'dart:math' as math;
 import 'package:web/web.dart' as web;
 
 void setupEventListeners(ColorExtractor extractor) {
@@ -8,21 +10,16 @@ void setupEventListeners(ColorExtractor extractor) {
     //Main Container
     final mainContainer = web.document.querySelector('.main') as web.HTMLDivElement;
 
-    //Img Container
-    final imgContainer = web.document.getElementById('-container-img') as web.HTMLDivElement;
-
     //Loaded Image
       //Canvas
         final canvas = web.document.createElement('canvas') as web.HTMLCanvasElement;
-        canvas.id = '---canvas-img';
+        canvas.id = '__canvas-img';
 
         final ctx = canvas.getContext('2d') as web.CanvasRenderingContext2D;
         var img = web.document.createElement('img') as web.HTMLImageElement;
       //
       
-      final loadedContainer = web.document.getElementById('-container-loaded-img') as web.HTMLDivElement;
-      final containerCanvas = web.document.getElementById('---container-canvas') as web.HTMLDivElement;
-      final paletteContainer = web.document.getElementById('---container-palette') as web.HTMLDivElement;
+      final containerCanvas = web.document.getElementById('_content-canvas') as web.HTMLDivElement;
       final paletteContent = web.document.getElementById('_content-palette') as web.HTMLDivElement;
     //
 
@@ -34,29 +31,61 @@ void setupEventListeners(ColorExtractor extractor) {
     final urlInput = web.document.getElementById('---input-url-img') as web.HTMLInputElement;
   //
 
+  //Session
+    //Sessions
+    final uploadSession = web.document.getElementById('-for-img') as web.HTMLElement;
+    final loadedSession = web.document.getElementById('-for-loaded-img') as web.HTMLElement;
+
+    final sessionManager = SessionManager(
+      {
+        AppSession.main: uploadSession,
+        AppSession.loaded: loadedSession
+      },
+      initialSession: AppSession.main
+    );
+  //
+
   //Display Colors
   void displayColors(List<Map<String, dynamic>> colors, web.Element paletteContent) {
     paletteContent.innerHTML = '';
 
     for(final color in colors) {
-      final colorDiv = web.document.createElement('div') as web.HTMLDivElement;
-      colorDiv.id = '_color-div';
-      colorDiv.style
-        ..width = '50px'
-        ..height = '50px'
-        ..backgroundColor = 'rgb(${color['r']}, ${color['g']}, ${color['b']})'
-        ..display = 'inline-block'
-        ..margin = '5px'
-      ;
+      final colorItemContainer = web.document.createElement('div') as web.HTMLDivElement;
+      colorItemContainer.id = '_content-color-display';
 
-      final hex = color['hex'] as String;
+      final colorDiv = web.document.createElement('div') as web.HTMLDivElement;
+      colorDiv.id = '__color-div';
+      colorDiv.style.backgroundColor = 'rgb(${color['r']}, ${color['g']}, ${color['b']})';
+
+      final colorInfoContainer = web.document.createElement('div') as web.HTMLDivElement;
+      colorInfoContainer.id = '__content-color-type';
+
       final rgbString = color['rgbToString'] as String;
+      final hex = color['hex'] as String;
       
       //Display RGB and Hex
-      colorDiv.text = '$hex\n$rgbString';
+        //RGB
+          final colorRgbText = web.document.createElement('p') as HTMLParagraphElement;
+          colorRgbText.id = '___color-rgb-text';
+          colorRgbText.textContent = rgbString;
+
+       //
+
+        //Hex
+          final colorHexText = web.document.createElement('p') as HTMLParagraphElement;
+          colorHexText.id = '___color-hex-text';
+          colorHexText.textContent = hex;
+        //
+
+        //Append
+        colorInfoContainer.appendChild(colorRgbText);
+        colorInfoContainer.appendChild(colorHexText);
+      //
 
       //Append
-      paletteContent.append(colorDiv);
+      colorItemContainer.appendChild(colorDiv);
+      colorItemContainer.appendChild(colorInfoContainer);
+      paletteContent.appendChild(colorItemContainer);
     }
   }
 
@@ -66,12 +95,28 @@ void setupEventListeners(ColorExtractor extractor) {
         containerCanvas.querySelector('#---canvas-img')?.remove();
       //
 
-      canvas.width = img.width;
-      canvas.height = img.height;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      //Max Dimensions
+        const maxWidth = 600;
+        const maxHeight = 800;
+        double scaleFactor = 1.0;
 
-      ctx.drawImage(img, 0, 0);
-      containerCanvas.append(canvas);
+        if(img.width > maxWidth || img.height > maxHeight) {
+          scaleFactor = math.min(maxWidth / img.width, maxHeight / img.height);
+          final finalWidth = img.width * scaleFactor;
+          final finalHeight = img.height * scaleFactor;
+
+          canvas.width = finalWidth.toInt();
+          canvas.height = finalHeight.toInt();
+
+          containerCanvas.style.width = '${finalWidth}px';
+          containerCanvas.style.height = '${finalHeight}px';
+          
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      //
+
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      containerCanvas.appendChild(canvas);
 
       //Data
       final data = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -100,7 +145,7 @@ void setupEventListeners(ColorExtractor extractor) {
         loadScreen.appendChild(loadTxt);
 
         //Container
-        imgContainer.style.display = 'none';
+        sessionManager.changeSession(AppSession.main);
 
         //Animation
           int ellipsisCount = 0;
@@ -132,13 +177,12 @@ void setupEventListeners(ColorExtractor extractor) {
           loaderActive = false;
         }
 
-        imgContainer.style.display = 'none';
-        loadedContainer.style.display = 'flex';
+        sessionManager.changeSession(AppSession.loaded);
 
         //Back
           void backBtn() {
-            final containerBack = web.document.getElementById('---container-back') as HTMLDivElement;
-            containerBack.querySelector('#---back-btn')?.remove();
+            final backContent = web.document.getElementById('_content-back') as HTMLDivElement;
+            backContent.querySelector('#---back-btn')?.remove();
 
             final backBtn = web.document.createElement('button') as HTMLButtonElement;
             backBtn.id = '---back-btn';
@@ -152,15 +196,14 @@ void setupEventListeners(ColorExtractor extractor) {
               img.removeAttribute('src');
               img = web.document.createElement('img') as web.HTMLImageElement;
 
-              loadedContainer.style.display = 'none';
-              imgContainer.style.display = 'flex';
+              sessionManager.changeSession(AppSession.main);
 
               if(fileInput != null) fileInput.value = '';
               urlInput.value = '';
               loaderActive = false;
             });
 
-            containerBack.appendChild(backBtn);
+            backContent.appendChild(backBtn);
           }
 
           backBtn();
