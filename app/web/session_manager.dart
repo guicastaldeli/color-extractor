@@ -1,7 +1,3 @@
-import 'package:web/helpers.dart';
-import 'dart:js_interop';
-import 'color_extractor.dart';
-import 'dart:math' as math;
 import 'package:web/web.dart' as web;
 
 enum AppSession {

@@ -1,7 +1,7 @@
 import 'package:web/helpers.dart';
 import 'dart:js_interop';
 import 'color_extractor.dart';
-import 'session-maganer.dart';
+import 'session_manager.dart';
 import 'dart:math' as math;
 import 'package:web/web.dart' as web;
 
