@@ -76,7 +76,7 @@
         #-container-img {
             display: flex;
             flex-direction: column;
-            gap: 2rem;
+            gap: 2rem !important;
 
             /* inputs */
                 #-container-i {

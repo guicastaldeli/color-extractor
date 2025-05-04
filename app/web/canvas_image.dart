@@ -17,7 +17,7 @@ void setupEventListeners(ColorExtractor extractor) {
         canvas.id = '---canvas-img';
 
         final ctx = canvas.getContext('2d') as web.CanvasRenderingContext2D;
-        final img = web.document.createElement('img') as web.HTMLImageElement;
+        var img = web.document.createElement('img') as web.HTMLImageElement;
       //
       
       final loadedContainer = web.document.getElementById('-container-loaded-img') as web.HTMLDivElement;
@@ -67,8 +67,9 @@ void setupEventListeners(ColorExtractor extractor) {
 
       canvas.width = img.width;
       canvas.height = img.height;
-      ctx.drawImage(img, 0, 0);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+      ctx.drawImage(img, 0, 0);
       containerCanvas.append(canvas);
 
       //Data
@@ -77,7 +78,7 @@ void setupEventListeners(ColorExtractor extractor) {
       displayColors(colors, paletteContainer);
     }
 
-    //Loade Screen
+    //Load Screen
     final loadScreen = web.document.createElement('div') as web.HTMLDivElement;
     loadScreen.className = 'load-screen';
     bool loaderActive = false;
@@ -124,8 +125,64 @@ void setupEventListeners(ColorExtractor extractor) {
         loadScreen.style.display = 'none';
         imgContainer.style.display = 'none';
         loadedContainer.style.display = 'block';
+
+        //Back
+          void backBtn() {
+            final containerBack = web.document.getElementById('--container-back') as HTMLDivElement;
+            containerBack.querySelector('#---back-btn')?.remove();
+
+            final backBtn = web.document.createElement('button') as HTMLButtonElement;
+            backBtn.id = '---back-btn';
+            backBtn.textContent = 'Back';
+
+            //Click
+            backBtn.onClick.listen((_) {
+              ctx.clearRect(0, 0, canvas.width, canvas.height);
+              containerCanvas.querySelector('#---canvas-img')?.remove();
+
+              img.removeAttribute('src');
+              img = web.document.createElement('img') as web.HTMLImageElement;
+
+              loadedContainer.style.display = 'none';
+              imgContainer.style.display = 'flex';
+
+              if(fileInput != null) fileInput.value = '';
+              urlInput.value = '';
+              loaderActive = true;
+            });
+
+            containerBack.appendChild(backBtn);
+          }
+
+          backBtn();
+        //
       }
     //
+
+    //Display Image
+    void displayImage(web.HTMLImageElement img, {String? url}) {
+      final loadListener = (web.Event _) {
+        if(img.width > 0 && img.height > 0) {
+          processImage(img);
+          displayContainer();
+        }
+      }.toJS;
+
+      final errorListener = (web.Event _) {
+        print('Error loading image');
+      }.toJS;
+
+      img.removeEventListener('load', loadListener);
+      img.removeEventListener('error', errorListener);
+
+      img.addEventListener('load', loadListener);
+      img.addEventListener('error', errorListener);
+
+      if(url != null) {
+        final cacheBuster = DateTime.now().millisecondsSinceEpoch;
+        img.src = '$url?cache=$cacheBuster';
+      }
+    }
   //
 
   //Input    
@@ -140,12 +197,7 @@ void setupEventListeners(ColorExtractor extractor) {
 
         reader.onLoadEnd.listen((e) {
           img.src = (reader.result as JSAny).toString();
-          img.onLoad.listen((e) {
-            Future.microtask(() {
-              processImage(img);
-              displayContainer();
-            });
-          });
+          displayImage(img);
         });
 
         reader.readAsDataURL(file);
@@ -164,13 +216,7 @@ void setupEventListeners(ColorExtractor extractor) {
 
     //Img
       img.crossOrigin = 'Anonymous';
-      img.onLoad.listen((e) {
-        Future.microtask(() {
-          processImage(img);
-          displayContainer();
-        });
-      });
-      img.onError.listen((e) => print('Error img'));
+      displayImage(img);
       img.src = url;
     //
   });
