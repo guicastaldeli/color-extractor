@@ -21,8 +21,9 @@ void setupEventListeners(ColorExtractor extractor) {
       //
       
       final loadedContainer = web.document.getElementById('-container-loaded-img') as web.HTMLDivElement;
-      final containerCanvas = web.document.getElementById('--container-canvas') as web.HTMLDivElement;
-      final paletteContainer = web.document.getElementById('--container-palette') as web.HTMLDivElement;
+      final containerCanvas = web.document.getElementById('---container-canvas') as web.HTMLDivElement;
+      final paletteContainer = web.document.getElementById('---container-palette') as web.HTMLDivElement;
+      final paletteContent = web.document.getElementById('_content-palette') as web.HTMLDivElement;
     //
 
     //Inputs
@@ -34,8 +35,8 @@ void setupEventListeners(ColorExtractor extractor) {
   //
 
   //Display Colors
-  void displayColors(List<Map<String, dynamic>> colors, web.Element paletteContainer) {
-    paletteContainer.innerHTML = '';
+  void displayColors(List<Map<String, dynamic>> colors, web.Element paletteContent) {
+    paletteContent.innerHTML = '';
 
     for(final color in colors) {
       final colorDiv = web.document.createElement('div') as web.HTMLDivElement;
@@ -55,7 +56,7 @@ void setupEventListeners(ColorExtractor extractor) {
       colorDiv.text = '$hex\n$rgbString';
 
       //Append
-      paletteContainer.append(colorDiv);
+      paletteContent.append(colorDiv);
     }
   }
 
@@ -75,12 +76,10 @@ void setupEventListeners(ColorExtractor extractor) {
       //Data
       final data = ctx.getImageData(0, 0, canvas.width, canvas.height);
       final colors = extractor.extractColors(data);
-      displayColors(colors, paletteContainer);
+      displayColors(colors, paletteContent);
     }
 
     //Load Screen
-    final loadScreen = web.document.createElement('div') as web.HTMLDivElement;
-    loadScreen.className = 'load-screen';
     bool loaderActive = false;
 
     //Loader
@@ -88,8 +87,12 @@ void setupEventListeners(ColorExtractor extractor) {
         if(loaderActive) return;
         loaderActive = true;
 
+        //Load Screen
+        final loadScreen = web.document.createElement('div') as web.HTMLDivElement;
+        loadScreen.className = 'load-screen';
         mainContainer.appendChild(loadScreen);
 
+        //Load Text
         final loadTxt = web.document.createElement('p') as web.HTMLParagraphElement;
         String loadContent = 'Loading Image';
         loadTxt.id = 'load-txt';
@@ -118,17 +121,23 @@ void setupEventListeners(ColorExtractor extractor) {
     //Display Container
       void displayContainer() {
         if(loaderActive) {
-          final timerId = loadScreen.getAttribute('data-timer-id');
-          if(timerId != null) web.window.clearInterval(int.parse(timerId));
+          final exLoadScreen = mainContainer.querySelector('.load-screen');
+          
+          if(exLoadScreen != null) {
+            final timerId = exLoadScreen.getAttribute('data-timer-id');
+            if(timerId != null) web.window.clearInterval(int.parse(timerId));
+            exLoadScreen.remove();
+          }
+
+          loaderActive = false;
         }
 
-        loadScreen.style.display = 'none';
         imgContainer.style.display = 'none';
-        loadedContainer.style.display = 'block';
+        loadedContainer.style.display = 'flex';
 
         //Back
           void backBtn() {
-            final containerBack = web.document.getElementById('--container-back') as HTMLDivElement;
+            final containerBack = web.document.getElementById('---container-back') as HTMLDivElement;
             containerBack.querySelector('#---back-btn')?.remove();
 
             final backBtn = web.document.createElement('button') as HTMLButtonElement;
@@ -148,7 +157,7 @@ void setupEventListeners(ColorExtractor extractor) {
 
               if(fileInput != null) fileInput.value = '';
               urlInput.value = '';
-              loaderActive = true;
+              loaderActive = false;
             });
 
             containerBack.appendChild(backBtn);

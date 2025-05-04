@@ -158,6 +158,25 @@
     /* loaded img */
         #-container-loaded-img {
             display: none;
+            position: relative;
+            justify-content: center;
+            align-items: center;
+
+            background-color: rgb(144, 37, 37);
+            
+            #--content {
+                display: flex;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 5rem;
+                
+                #---container-palette {
+                    #_content-palette {
+                        display: grid;
+                        grid-template-columns: repeat(4, 1fr);
+                        gap: 1rem;
+                    }
+                }
+            }
         }
     /* */
 
