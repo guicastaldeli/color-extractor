@@ -159,7 +159,7 @@ void setupEventListeners(ColorExtractor extractor) {
 
             final backBtn = web.document.createElement('button') as HTMLButtonElement;
             backBtn.id = '---back-btn';
-            backBtn.textContent = 'Back';
+            backBtn.textContent = 'Voltar';
 
             //Click
             void resetState() {

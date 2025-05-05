@@ -77,7 +77,7 @@ class ClipboardManager {
   }
 
   static void configCopyBtn(web.HTMLButtonElement button, ColorType type) {
-    button.textContent = 'Copy ${TypeDetector.getTypeName(type)}';
+    button.textContent = 'Copiar ${TypeDetector.getTypeName(type)}';
     button.setAttribute('data-action', type.toString());
     button.classList.add('color-type-${type.toString().split('.').last}');
   }

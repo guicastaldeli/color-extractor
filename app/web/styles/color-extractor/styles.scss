@@ -226,13 +226,13 @@
 @media (min-width: 110%) and (min-resolution: 110dpi),
     (-webkit-min-device-pixel-ratio: 1.1) {
     .main #-for-loaded-img {
-        transform: scale(0.85);
+        transform: scale(0.8);
     }
 }
 
 @media (min-width: 125%) and (min-resolution: 125dpi),
     (-webkit-min-device-pixel-ratio: 1.2) {
     .main #-for-loaded-img {
-        transform: scale(0.70);
+        transform: scale(0.65);
     }
 }

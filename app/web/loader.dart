@@ -19,7 +19,7 @@ class Loader {
 
     //Load Text
     final loadTxt = web.document.createElement('p') as web.HTMLParagraphElement;
-    String loadContent = 'Loading Colors';
+    String loadContent = 'Extraindo Cores';
     loadTxt.id = 'load-txt';
     loadTxt.textContent = loadContent;
     loadScreen.appendChild(loadTxt);
