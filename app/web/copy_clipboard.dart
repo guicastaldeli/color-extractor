@@ -1,7 +1,6 @@
-import 'dart:js_interop';
-
-import 'package:web/web.dart' as web;
 import 'package:web/helpers.dart';
+import 'package:web/web.dart' as web;
+import 'type_detector.dart';
 
 class ClipboardManager {
   static bool init = false;
@@ -23,47 +22,80 @@ class ClipboardManager {
 
   static void setupCopyButtons(web.Element paletteContent) {
     setupCopy();
-
-    final el = paletteContent.querySelectorAll('#___color-rgb-text, #___color-hex-text');
     
-    for(var i = 0; i < el.length; i++) {
-      final e = el.item(i);
-      if(e == null) continue;
+    final colorEl = paletteContent.querySelectorAll('[data-color-value]');
 
-      final textEl = e as web.HTMLElement;
+    for(var i = 0; i < colorEl.length; i++) {
+      final el = colorEl.item(i) as web.HTMLElement?;
+      if(el == null) continue;
 
-      final wrapper = web.document.createElement('div') as web.HTMLDivElement;
-      wrapper.className = 'wrapper';
-
-      final container = web.document.createElement('div') as web.HTMLDivElement;
-      container.id = '-container-copy-btn';
-
-      final copyBtn = web.document.createElement('button') as web.HTMLButtonElement;
-      copyBtn.id = '--copy-button';
-      copyBtn.textContent = 'Copy';
-      copyBtn.classList.add('hide-copy-btn');
-
-      //Append
-      textEl.parentNode?.insertBefore(wrapper, textEl);
-      wrapper.appendChild(textEl);
-      wrapper.appendChild(container);
-      container.appendChild(copyBtn);
-
-      //Container Functions...
-        wrapper.onMouseEnter.listen((_) {
-          copyBtn.classList.remove('hide-copy-btn');
-          copyBtn.classList.add('show-copy-btn');
-        });
-
-        wrapper.onMouseLeave.listen((_) {
-          copyBtn.classList.remove('show-copy-btn');
-          copyBtn.classList.add('hide-copy-btn');
-        });
-
-        copyBtn.onClick.listen((_) async {
-          await copyToClipboard(textEl.textContent ?? '');
-        });
-      //
+      setupCopyBtnEl(el);
     }
   }
-}
+
+  static void setupCopyBtnEl(web.Element el) {
+    //Wrapper
+    final wrapper = web.document.createElement('div') as web.HTMLDivElement;
+    wrapper.className = 'wrapper';
+
+    //Container
+    final container = web.document.createElement('div') as web.HTMLDivElement;
+    container.id = '-container-copy-btn';
+
+    //Button
+    final copyBtn = web.HTMLButtonElement()
+      ..id = '--copy-button'
+      ..style.display = 'none'
+      ..setAttribute('data-action', 'copy')
+    ;
+
+    //Text and Type...
+      final colorText = el.textContent ?? '';
+      final colorType = TypeDetector.detectType(colorText);
+      configCopyBtn(copyBtn, colorType);
+      setupBtn(copyBtn, colorText);
+    //
+
+    //Append
+      el.parentNode?.insertBefore(wrapper, el);
+      wrapper.appendChild(el);
+      wrapper.appendChild(container);
+      container.appendChild(copyBtn);
+    //
+
+    //Listeners...
+      wrapper.onMouseEnter.listen((_) {
+        copyBtn.classList.remove('hide-copy-btn');
+        copyBtn.classList.add('show-copy-btn');
+      });
+
+      wrapper.onMouseLeave.listen((_) {
+        copyBtn.classList.remove('show-copy-btn');
+        copyBtn.classList.add('hide-copy-btn');
+      });
+    //
+  }
+
+  static void configCopyBtn(web.HTMLButtonElement button, ColorType type) {
+    button.textContent = 'Copy ${TypeDetector.getTypeName(type)}';
+    button.setAttribute('data-action', type.toString());
+    button.classList.add('color-type-${type.toString().split('.').last}');
+  }
+
+  static void setupBtn(web.HTMLButtonElement button, String text) {
+    button.onClick.listen((_) async {
+      await copyToClipboard(text);
+
+      final originalText = button.textContent;
+      button.textContent = 'Copied';
+      button.classList.add('copied');
+
+      //Original
+        await Future.delayed(Duration(seconds: 2));
+
+        button.textContent = originalText;
+        button.classList.remove('copied');
+      //
+    });
+  }
+} 

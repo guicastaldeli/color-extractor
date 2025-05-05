@@ -3,8 +3,10 @@ import 'dart:js_interop';
 import 'dart:math' as math;
 import 'package:web/web.dart' as web;
 import 'color_extractor.dart';
+import 'validator.dart';
 import 'session_manager.dart';
 import 'copy_clipboard.dart';
+import 'loader.dart';
 
 void setupEventListeners(ColorExtractor extractor) {
   //El
@@ -69,16 +71,19 @@ void setupEventListeners(ColorExtractor extractor) {
       
       //Display RGB and Hex
         //RGB
-          final colorRgbText = web.document.createElement('p') as HTMLParagraphElement;
-          colorRgbText.id = '___color-rgb-text';
-          colorRgbText.textContent = rgbString;
-
+          final colorRgbText = web.document.createElement('p')
+            ..id = '___color-rgb-text'
+            ..textContent = rgbString
+            ..setAttribute('data-color-value', rgbString)
+          ;
        //
 
         //Hex
-          final colorHexText = web.document.createElement('p') as HTMLParagraphElement;
-          colorHexText.id = '___color-hex-text';
-          colorHexText.textContent = hex;
+          final colorHexText = web.document.createElement('p')
+            ..id = '___color-hex-text'
+            ..textContent = hex
+            ..setAttribute('data-color-value', hex)
+          ;
         //
 
         //Append
@@ -96,7 +101,7 @@ void setupEventListeners(ColorExtractor extractor) {
   }
 
   //Process Image
-    void processImage(web.HTMLImageElement img) {
+    void processImage(web.HTMLImageElement img) async {
       //...
         containerCanvas.querySelector('#---canvas-img')?.remove();
       //
@@ -131,58 +136,20 @@ void setupEventListeners(ColorExtractor extractor) {
     }
 
     //Load Screen
-    bool loaderActive = false;
+    final loader = Loader(mainContainer);
 
     //Loader
       void showLoader() {
-        if(loaderActive) return;
-        loaderActive = true;
-
-        //Load Screen
-        final loadScreen = web.document.createElement('div') as web.HTMLDivElement;
-        loadScreen.className = 'load-screen';
-        mainContainer.appendChild(loadScreen);
-
-        //Load Text
-        final loadTxt = web.document.createElement('p') as web.HTMLParagraphElement;
-        String loadContent = 'Loading Image';
-        loadTxt.id = 'load-txt';
-        loadTxt.textContent = loadContent;
-        loadScreen.appendChild(loadTxt);
-
-        //Container
+        loader.show();
         sessionManager.changeSession(AppSession.main);
-
-        //Animation
-          int ellipsisCount = 0;
-          const maxDots = 3;
-
-          final timer = web.window.setInterval((JSAny _) {
-            ellipsisCount = (ellipsisCount + 1) % (maxDots + 1);
-            final dots = '.' * ellipsisCount;
-            loadTxt.textContent = '$loadContent$dots';
-            return null;
-          }.toJS, 500.toJS);
-        //
-
-        loadScreen.setAttribute('data-timer-id', timer.toString());
       }
     //
 
-    //Display Container
+    //Display
+      //Container
       void displayContainer() {
-        if(loaderActive) {
-          final exLoadScreen = mainContainer.querySelector('.load-screen');
-          
-          if(exLoadScreen != null) {
-            final timerId = exLoadScreen.getAttribute('data-timer-id');
-            if(timerId != null) web.window.clearInterval(int.parse(timerId));
-            exLoadScreen.remove();
-          }
-
-          loaderActive = false;
-        }
-
+        //Loader
+        loader.hide();
         sessionManager.changeSession(AppSession.loaded);
 
         //Back
@@ -195,52 +162,51 @@ void setupEventListeners(ColorExtractor extractor) {
             backBtn.textContent = 'Back';
 
             //Click
-            backBtn.onClick.listen((_) {
+            void resetState() {
               ctx.clearRect(0, 0, canvas.width, canvas.height);
               containerCanvas.querySelector('#---canvas-img')?.remove();
 
-              img.removeAttribute('src');
               img = web.document.createElement('img') as web.HTMLImageElement;
-
               sessionManager.changeSession(AppSession.main);
 
               if(fileInput != null) fileInput.value = '';
               urlInput.value = '';
-              loaderActive = false;
-            });
+              loader.hide();
+            }
 
+            backBtn.onClick.listen((_) => resetState());
             backContent.appendChild(backBtn);
           }
 
           backBtn();
         //
       }
-    //
 
-    //Display Image
-    void displayImage(web.HTMLImageElement img, {String? url}) {
-      final loadListener = (web.Event _) {
-        if(img.width > 0 && img.height > 0) {
-          processImage(img);
-          displayContainer();
+      //Display Image
+      void displayImage(web.HTMLImageElement img, {String? url}) {
+        final loadListener = (web.Event _) {
+          if(img.width > 0 && img.height > 0) {
+            processImage(img);
+            displayContainer();
+          }
+        }.toJS;
+
+        final errorListener = (web.Event _) {
+          print('Error loading image');
+        }.toJS;
+
+        img.removeEventListener('load', loadListener);
+        img.removeEventListener('error', errorListener);
+
+        img.addEventListener('load', loadListener);
+        img.addEventListener('error', errorListener);
+
+        if(url != null) {
+          final cacheBuster = DateTime.now().millisecondsSinceEpoch;
+          img.src = '$url?cache=$cacheBuster';
         }
-      }.toJS;
-
-      final errorListener = (web.Event _) {
-        print('Error loading image');
-      }.toJS;
-
-      img.removeEventListener('load', loadListener);
-      img.removeEventListener('error', errorListener);
-
-      img.addEventListener('load', loadListener);
-      img.addEventListener('error', errorListener);
-
-      if(url != null) {
-        final cacheBuster = DateTime.now().millisecondsSinceEpoch;
-        img.src = '$url?cache=$cacheBuster';
       }
-    }
+    //
   //
 
   //Input    
@@ -267,10 +233,19 @@ void setupEventListeners(ColorExtractor extractor) {
   urlForm.onSubmit.listen((e) {
     e.preventDefault();
 
-    showLoader();
-
     final url = urlInput.value.trim();
-    if(url.isEmpty) return;
+    
+    //Empty
+      ErrorHandler.hideError(urlInput);
+
+      var validateError = Validator.validateImageUrlInput(url);
+      if(!validateError) {
+        ErrorHandler.showError(urlInput);
+        return;
+      }
+    //
+
+    showLoader();
 
     //Img
       img.crossOrigin = 'Anonymous';
