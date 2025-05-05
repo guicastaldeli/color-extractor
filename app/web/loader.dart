@@ -34,7 +34,7 @@ class Loader {
         loadTxt.textContent = '$loadContent$dots';
       }).toJS;
 
-      _timerId = web.window.setInterval(timer, 500.toJS);
+      _timerId = web.window.setInterval(timer, 30000.toJS);
     //
   }
 

@@ -101,7 +101,7 @@ void setupEventListeners(ColorExtractor extractor) {
   }
 
   //Process Image
-    void processImage(web.HTMLImageElement img) async {
+    void processImage(web.HTMLImageElement img) {
       //...
         containerCanvas.querySelector('#---canvas-img')?.remove();
       //
