@@ -1,1 +1,0 @@
-{"isEntrypoint":false,"deps":["web|lib/helpers.dart","web|lib/web.dart","app|web/type_detector.dart"],"parts":[],"conditionalDeps":[],"sdkDeps":[],"hasMain":false}

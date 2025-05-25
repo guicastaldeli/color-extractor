@@ -1,1 +1,0 @@
-{"isEntrypoint":true,"deps":["web|lib/helpers.dart","web|lib/web.dart","app|web/canvas_image.dart","app|web/color_extractor.dart"],"parts":[],"conditionalDeps":[],"sdkDeps":[],"hasMain":true}

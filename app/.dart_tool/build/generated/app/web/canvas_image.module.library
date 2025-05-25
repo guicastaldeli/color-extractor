@@ -1,1 +1,0 @@
-{"isEntrypoint":false,"deps":["web|lib/helpers.dart","web|lib/web.dart","app|web/color_extractor.dart","app|web/validator.dart","app|web/session_manager.dart","app|web/copy_clipboard.dart","app|web/loader.dart"],"parts":[],"conditionalDeps":[],"sdkDeps":["js_interop","math"],"hasMain":false}
