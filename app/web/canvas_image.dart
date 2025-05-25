@@ -202,8 +202,11 @@ void setupEventListeners(ColorExtractor extractor) {
         img.addEventListener('error', errorListener);
 
         if(url != null) {
+          final encodedUrl = Uri.encodeComponent(url);
           final cacheBuster = DateTime.now().millisecondsSinceEpoch;
-          img.src = '$url?cache=$cacheBuster';
+
+          img.crossOrigin =  'anonymous';
+          img.src = '/api/proxy?url=$encodedUrl&cache=$cacheBuster';
         }
       }
     //
